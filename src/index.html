@@ -1,169 +1,60 @@
 <!doctype html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0b0b10">
-    <title>Nexus</title>
-    <link rel="stylesheet" href="styles.css">
-    <script type="module" src="/main.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#09090e">
+<title>Nexus</title>
+<link rel="stylesheet" href="styles.css">
+<script type="module" src="/main.js" defer></script>
 </head>
 <body>
-    <div class="loading-screen" id="loading-screen">
-        <div class="loading-content">
-            <img class="loading-logo" src="nexus-icon.png" alt="Nexus">
-            <h1>Nexus</h1>
-            <p>Your AI workspace</p>
-            <div class="loading-progress">
-                <div class="loading-progress-bar"></div>
-            </div>
-            <span class="loading-status">Initialisation...</span>
-        </div>
-        <span class="loading-version">NEXUS DESKTOP · 0.1.0</span>
-    </div>
-
-    <div class="app">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <img class="logo" src="nexus-icon.png" alt="Nexus">
-                <span class="brand">Nexus</span>
-            </div>
-
-            <button class="new-chat" id="new-chat">
-                <span>＋</span> Nouvelle conversation
-            </button>
-
-            <div class="sidebar-section">
-                <span class="section-label">ESPACE DE TRAVAIL</span>
-                <button class="nav-item active" id="nav-conversations">◈ <span>Conversations</span></button>
-                <button class="nav-item" id="nav-history">◷ <span>Historique</span></button>
-                <button class="nav-item" id="nav-library">▣ <span>Bibliothèque</span></button>
-            </div>
-
-            <div class="sidebar-section providers">
-                <span class="section-label">ASSISTANTS IA</span>
-
-                <button class="provider active" data-provider="groq">
-                    <span class="provider-icon groq-icon">G</span>
-                    Groq
-                    <span class="provider-status" id="status-groq"></span>
-                </button>
-
-                <button class="provider" data-provider="gemini">
-                    <span class="provider-icon gemini">✦</span>
-                    Gemini
-                    <span class="provider-status" id="status-gemini"></span>
-                </button>
-            </div>
-
-            <div class="sidebar-footer">
-                <button class="nav-item" id="open-settings">⚙ <span>Paramètres</span></button>
-
-                <div class="user-profile">
-                    <div class="user-avatar">S</div>
-                    <div class="user-info">
-                        <span class="user-name">Utilisateur</span>
-                        <span class="user-plan">Nexus Desktop · Free</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <main class="workspace">
-            <header class="topbar">
-                <div class="breadcrumb">
-                    <span>Nexus</span>
-                    <span class="separator">/</span>
-                    <span id="current-provider">Groq</span>
-                </div>
-
-                <div class="topbar-actions">
-                    <select id="model-select" class="model-select" title="Choisir un modèle"></select>
-                    <button class="icon-button" id="top-new-chat" title="Nouvelle conversation">＋</button>
-                    <button class="icon-button" id="top-settings" title="Paramètres">⚙</button>
-                </div>
-            </header>
-
-            <section class="chat-area" id="chat-area">
-                <div class="welcome" id="welcome">
-                    <img class="welcome-logo" src="nexus-icon.png" alt="Nexus">
-                    <h1>Bienvenue sur <span>Nexus</span></h1>
-                    <p>Un seul espace. Plusieurs intelligences artificielles.</p>
-
-                    <div class="welcome-cards">
-                        <button class="welcome-card active" data-provider="groq">
-                            <span class="card-icon">G</span>
-                            <strong>Groq</strong>
-                            <span>Fast inference</span>
-                        </button>
-
-                        <button class="welcome-card" data-provider="gemini">
-                            <span class="card-icon">✦</span>
-                            <strong>Gemini</strong>
-                            <span>Google AI</span>
-                        </button>
-                    </div>
-
-                    <div class="welcome-hint" id="welcome-hint">
-                        Configure une clé API dans les paramètres pour commencer.
-                    </div>
-                </div>
-
-                <div class="messages" id="messages"></div>
-            </section>
-
-            <footer class="composer-area">
-                <div class="composer">
-                    <button class="composer-add" id="composer-settings" title="Paramètres API">＋</button>
-                    <textarea id="message-input" placeholder="Écrire un message..." rows="1"></textarea>
-                    <button class="send-button" id="send-message" title="Envoyer">↑</button>
-                </div>
-                <p class="disclaimer">Les réponses sont générées par les API des fournisseurs sélectionnés.</p>
-            </footer>
-        </main>
-    </div>
-
-    <div class="settings-overlay" id="settings-overlay">
-        <section class="settings-modal">
-            <header class="settings-header">
-                <div>
-                    <h2>Paramètres API</h2>
-                    <p>Gère tes connexions aux fournisseurs IA.</p>
-                </div>
-                <button class="settings-close" id="close-settings">×</button>
-            </header>
-
-            <div class="settings-content">
-                <label for="api-provider">Fournisseur</label>
-                <select id="api-provider">
-                    <option value="groq">Groq</option>
-                    <option value="gemini">Google Gemini</option>
-                </select>
-
-                <label for="api-key-input">Clé API</label>
-                <input
-                    type="password"
-                    id="api-key-input"
-                    placeholder="Colle ta clé API ici"
-                    autocomplete="off"
-                    spellcheck="false"
-                >
-
-                <div class="key-status" id="key-status">
-                    Vérification de la connexion...
-                </div>
-
-                <div class="settings-actions">
-                    <button id="delete-api-key" class="danger-button">Supprimer la clé</button>
-                    <button id="save-api-key" class="primary-button">Enregistrer la clé</button>
-                </div>
-
-                <p class="security-note">
-                    Tes clés sont stockées dans le trousseau sécurisé du système.
-                    Elles ne sont pas enregistrées dans les fichiers de Nexus.
-                </p>
-            </div>
-        </section>
-    </div>
-</body>
-</html>
+<div class="loading-screen" id="loading-screen"><div class="loading-content"><img class="loading-logo" src="nexus-icon.png" alt="Nexus"><h1>Nexus</h1><p>Your AI workspace</p><div class="loading-progress"><div class="loading-progress-bar"></div></div><span class="loading-status">Initialisation...</span></div><span class="loading-version">NEXUS DESKTOP · 0.1.0</span></div>
+<div class="app">
+<aside class="sidebar">
+  <div class="sidebar-header"><img class="logo" src="nexus-icon.png" alt=""><span class="brand">Nexus</span><span class="version-tag">0.1</span></div>
+  <button class="new-chat" id="new-chat"><span>＋</span> Nouvelle conversation</button>
+  <div class="sidebar-section">
+    <span class="section-label">ESPACE DE TRAVAIL</span>
+    <button class="nav-item active" data-view="chat">◈ <span>Conversations</span></button>
+    <button class="nav-item" data-view="history">◷ <span>Historique</span></button>
+    <button class="nav-item" data-view="library">▣ <span>Bibliothèque</span></button>
+  </div>
+  <div class="sidebar-section">
+    <div class="section-heading"><span class="section-label">DOSSIERS</span><button class="tiny-button" id="add-folder" title="Nouveau dossier">＋</button></div>
+    <div id="folder-list" class="folder-list"></div>
+  </div>
+  <div class="sidebar-section providers">
+    <span class="section-label">ASSISTANTS IA</span>
+    <button class="provider active" data-provider="groq"><span class="provider-icon">G</span>Groq<span class="provider-status" id="status-groq"></span></button>
+    <button class="provider" data-provider="gemini"><span class="provider-icon gemini">✦</span>Gemini<span class="provider-status" id="status-gemini"></span></button>
+  </div>
+  <div class="sidebar-footer">
+    <button class="nav-item" id="open-settings">⚙ <span>Paramètres</span></button>
+    <div class="user-profile"><div class="user-avatar">N</div><div class="user-info"><span class="user-name">Utilisateur</span><span class="user-plan">Nexus Desktop</span></div></div>
+  </div>
+</aside>
+<main class="workspace">
+<header class="topbar"><div class="breadcrumb"><span>Nexus</span><span class="separator">/</span><span id="current-view-title">Conversations</span></div><div class="topbar-actions"><select id="model-select" class="model-select" title="Modèle"></select><button class="icon-button" id="top-new-chat" title="Nouvelle conversation">＋</button><button class="icon-button" id="top-settings" title="Paramètres">⚙</button></div></header>
+<div class="view" id="chat-view">
+  <section class="chat-area" id="chat-area">
+    <div class="welcome" id="welcome"><img class="welcome-logo" src="nexus-icon.png" alt=""><h1>Bienvenue sur <span>Nexus</span></h1><p>Un seul espace. Plusieurs intelligences artificielles.</p><div class="welcome-cards"><button class="welcome-card" data-provider="groq"><span class="card-icon">G</span><strong>Groq</strong><span>Fast inference</span></button><button class="welcome-card" data-provider="gemini"><span class="card-icon">✦</span><strong>Gemini</strong><span>Google AI</span></button></div><div class="welcome-hint" id="welcome-hint">Configure une clé API dans les paramètres pour commencer.</div></div>
+    <div class="messages" id="messages"></div>
+  </section>
+  <footer class="composer-area"><div class="composer-tools"><select id="context-mode" title="Contexte"><option value="smart">Contexte intelligent</option><option value="quick">Rapide</option><option value="full">Complet</option><option value="project">Projet</option><option value="custom">Personnalisé</option></select><span id="active-folder-label"></span></div><div class="composer"><button class="composer-add" id="attach-file" title="Ajouter un fichier à la bibliothèque">＋</button><textarea id="message-input" placeholder="Écrire un message..." rows="1"></textarea><button class="send-button" id="send-message" title="Envoyer">↑</button></div><p class="disclaimer">Les réponses sont générées par les API des fournisseurs sélectionnés.</p></footer>
+</div>
+<section class="view secondary-view" id="history-view" hidden><div class="page-heading"><div><h1>Historique</h1><p>Retrouve et organise toutes tes conversations.</p></div><input id="history-search" class="search-input" placeholder="Rechercher une conversation..."></div><div id="history-list" class="item-list"></div></section>
+<section class="view secondary-view" id="library-view" hidden><div class="page-heading"><div><h1>Bibliothèque</h1><p>Fichiers et ressources enregistrés dans Nexus.</p></div><button class="primary-button" id="import-file">＋ Importer un fichier</button></div><div id="library-list" class="library-grid"></div><input id="file-input" type="file" multiple hidden></section>
+</main>
+</div>
+<div class="settings-overlay" id="settings-overlay"><section class="settings-modal"><header class="settings-header"><div><h2>Paramètres</h2><p>Configure Nexus et tes fournisseurs IA.</p></div><button class="settings-close" id="close-settings">×</button></header><div class="settings-content">
+<label for="api-provider">Fournisseur</label><select id="api-provider"><option value="groq">Groq</option><option value="gemini">Google Gemini</option></select>
+<label for="api-key-input">Clé API</label><input type="password" id="api-key-input" placeholder="Colle ta clé API ici" autocomplete="off" spellcheck="false">
+<div class="key-status" id="key-status">Vérification de la connexion...</div><div class="settings-actions"><button id="delete-api-key" class="danger-button">Supprimer la clé</button><button id="save-api-key" class="primary-button">Enregistrer la clé</button></div>
+<div class="settings-divider"></div><label for="default-context">Mode de contexte par défaut</label><select id="default-context"><option value="smart">Intelligent</option><option value="quick">Rapide</option><option value="full">Complet</option><option value="project">Projet</option><option value="custom">Personnalisé</option></select>
+<label for="theme-select">Apparence</label><select id="theme-select"><option value="dark">Sombre</option><option value="light">Clair</option><option value="system">Système</option></select>
+<div class="settings-actions"><button id="export-backup" class="secondary-button">Exporter la sauvegarde</button><button id="import-backup" class="secondary-button">Importer une sauvegarde</button></div><input id="backup-input" type="file" accept="application/json,.json" hidden>
+<p class="security-note">Les clés API sont conservées dans le trousseau sécurisé du système. Les conversations, dossiers, préférences et ressources sont stockés localement dans SQLite.</p>
+</div></section></div>
+<div class="toast-container" id="toast-container"></div>
+</body></html>
