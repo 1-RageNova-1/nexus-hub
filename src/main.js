@@ -46,7 +46,7 @@ $("new-chat").addEventListener("click",newChat);$("top-new-chat").addEventListen
 $("message-input").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}});
 $("model-select").addEventListener("change",e=>{state.model[state.provider]=e.target.value;});
 $("context-mode").addEventListener("change",e=>{state.context=e.target.value;});
-$("open-settings").addEventListener("click",showSettings);$("top-settings").addEventListener("click",showSettings);$("close-settings").addEventListener("click",hideSettings);
+$("open-settings").addEventListener("click",showSettings);$("top-settings").addEventListener("click",showSettings);$("open-profile-settings").addEventListener("click",showSettings);$("close-settings").addEventListener("click",hideSettings);
 $("settings-overlay").addEventListener("click",e=>{if(e.target===$("settings-overlay"))hideSettings();});
 $("api-provider").addEventListener("change",updateKeyStatus);$("save-api-key").addEventListener("click",saveKey);$("delete-api-key").addEventListener("click",deleteKey);
 $("add-folder").addEventListener("click",addFolder);$("import-file").addEventListener("click",()=>$("file-input").click());$("attach-file").addEventListener("click",()=>$("file-input").click());
