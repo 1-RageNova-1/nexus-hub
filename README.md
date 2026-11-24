@@ -4,7 +4,7 @@ Nexus is a native desktop AI workspace built with Tauri 2, Rust and vanilla HTML
 
 ## Features
 
-- Chat with Groq and Gemini using your own API keys.
+- Chat with Groq and OpenRouter using your own API keys.
 - API keys stored in the operating system credential manager.
 - SQLite-backed conversation history, search, favorites and pinned conversations.
 - Organize conversations into folders.
