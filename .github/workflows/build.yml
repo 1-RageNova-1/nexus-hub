@@ -41,3 +41,72 @@ jobs:
           path: src-tauri/target/release/bundle/deb/*.deb
           if-no-files-found: error
           retention-days: 14
+
+  windows:
+    name: Windows x64 installers
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version '^2' --locked
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Build Windows installers
+        run: cargo tauri build --bundles nsis,msi
+      - name: Upload Windows installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-windows-x64
+          path: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
+          if-no-files-found: error
+          retention-days: 14
+
+  android:
+    name: Android arm64 APK
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install Android SDK and NDK
+        run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018"
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install Rust Android target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version '^2' --locked
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Initialize Android project
+        run: cargo tauri android init --ci
+      - name: Build Android APK
+        run: cargo tauri android build --apk --target aarch64
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-android-arm64-apk
+          path: src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          if-no-files-found: error
+          retention-days: 14
