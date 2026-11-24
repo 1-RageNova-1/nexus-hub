@@ -677,3 +677,14 @@ button {
 :root[data-theme="light"] .settings-content input,:root[data-theme="light"] .settings-content select{background:#f5f5fa;color:#20202a;color-scheme:light}
 :root[data-theme="light"] .settings-content select option{background:#fff;color:#20202a}
 @media(max-width:650px){.settings-overlay{padding:12px}.settings-modal{max-height:calc(100vh - 24px)}.settings-header,.settings-content{padding-left:17px;padding-right:17px}#open-settings{justify-content:center!important}#open-settings span{display:none!important}.user-profile{justify-content:center;padding:12px 0 0}.profile-settings-icon{display:none}}
+
+/* Markdown and code presentation */
+.message-content{line-height:1.72;overflow-wrap:anywhere}
+.message-content p{margin:0 0 12px}.message-content p:last-child{margin-bottom:0}
+.message-content ul{margin:8px 0 12px;padding-left:23px}.message-content li{padding-left:3px;margin:4px 0}
+.message-content strong{font-weight:700}.message-content a{color:#b9a4ff;text-decoration:underline;text-underline-offset:3px}
+.code-block{margin:13px 0 15px;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:11px;background:#09090f}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.09);background:#151520;color:#aaaabd;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.code-header button{padding:5px 10px;border:1px solid rgba(255,255,255,.14);border-radius:6px;background:#252535;color:#eeeef5;font-size:10px;cursor:pointer}
+.code-block pre{max-width:100%;margin:0;padding:14px 16px;overflow-x:auto;white-space:pre}
+.code-block pre code{color:#e4e4ee;font-family:"JetBrains Mono",Consolas,monospace;font-size:12px;line-height:1.65;tab-size:4}
