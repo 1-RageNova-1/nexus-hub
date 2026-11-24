@@ -10,7 +10,7 @@ const SERVICE_NAME: &str = "com.sasha.nexus";
 struct AppDatabase(Mutex<Connection>);
 
 fn get_entry(provider: &str) -> Result<Entry, String> {
-    if !["groq", "gemini"].contains(&provider) {
+    if !["groq", "openrouter"].contains(&provider) {
         return Err("Fournisseur non reconnu.".into());
     }
     Entry::new(SERVICE_NAME, provider).map_err(|e| format!("Trousseau système : {e}"))
@@ -207,40 +207,22 @@ async fn send_chat_message(provider: String, model: String, messages: Vec<ChatMe
     if messages.is_empty() { return Err("La conversation est vide.".into()); }
     let api_key = get_entry(&provider)?.get_password().map_err(|_| format!("Aucune clé API enregistrée pour {provider}."))?;
     let client = reqwest::Client::builder().timeout(std::time::Duration::from_secs(120)).build().map_err(|e| e.to_string())?;
-    let (url, body, gemini) = match provider.as_str() {
-        "groq" => ("https://api.groq.com/openai/v1/chat/completions".to_string(),
-            json!({"model":model,"messages":messages,"temperature":0.7}), false),
-        "gemini" => {
-            let mut contents = Vec::new();
-            let mut system = Vec::new();
-            for message in &messages {
-                match message.role.as_str() {
-                    "system" => system.push(message.content.clone()),
-                    "user" => contents.push(json!({"role":"user","parts":[{"text":message.content}]})),
-                    "assistant" => contents.push(json!({"role":"model","parts":[{"text":message.content}]})),
-                    _ => return Err("Rôle de message non reconnu.".into()),
-                }
-            }
-            let mut body = json!({"contents":contents,"generationConfig":{"temperature":0.7}});
-            if !system.is_empty() { body["systemInstruction"] = json!({"parts":[{"text":system.join("\n")} ]}); }
-            (format!("https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"),body,true)
-        }
+    let url = match provider.as_str() {
+        "groq" => "https://api.groq.com/openai/v1/chat/completions",
+        "openrouter" => "https://openrouter.ai/api/v1/chat/completions",
         _ => return Err("Fournisseur non reconnu.".into()),
     };
-    let mut request = client.post(url).header("Content-Type","application/json");
-    request = if gemini { request.header("x-goog-api-key",&api_key) } else { request.bearer_auth(&api_key) };
-    let response = request.json(&body).send().await.map_err(|e| format!("Erreur réseau : {e}"))?;
+    let body = json!({"model":model,"messages":messages,"temperature":0.7});
+    let response = client.post(url).header("Content-Type","application/json")
+        .bearer_auth(&api_key).header("X-OpenRouter-Title","Nexus")
+        .json(&body).send().await.map_err(|e| format!("Erreur réseau : {e}"))?;
     let status = response.status();
     let payload: Value = response.json().await.map_err(|e| format!("Réponse API invalide : {e}"))?;
     if !status.is_success() {
         let detail = payload["error"]["message"].as_str().or_else(|| payload["message"].as_str()).unwrap_or("Erreur inconnue du fournisseur.");
         return Err(format!("API {provider} ({status}): {detail}"));
     }
-    let answer = if gemini {
-        payload["candidates"][0]["content"]["parts"].as_array().map(|parts| parts.iter().filter_map(|p| p["text"].as_str()).collect::<Vec<_>>().join("")).unwrap_or_default()
-    } else {
-        payload["choices"][0]["message"]["content"].as_str().unwrap_or("").to_string()
-    };
+    let answer = payload["choices"][0]["message"]["content"].as_str().unwrap_or("").to_string();
     if answer.is_empty() { return Err("Le fournisseur n'a retourné aucune réponse textuelle.".into()); }
     Ok(answer)
 }
