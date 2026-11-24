@@ -20,7 +20,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev libwebkit2gtk-4.1-dev libsecret-1-dev
+          sudo apt-get install -y build-essential curl wget file rpm libssl-dev libayatana-appindicator3-dev librsvg2-dev libwebkit2gtk-4.1-dev libsecret-1-dev
       - name: Install Node
         uses: actions/setup-node@v4
         with:
@@ -32,13 +32,20 @@ jobs:
         run: cargo install tauri-cli --version '^2' --locked
       - name: Install frontend dependencies
         run: npm ci
-      - name: Build Debian package
-        run: cargo tauri build --bundles deb
+      - name: Build Debian and RPM packages
+        run: cargo tauri build --bundles deb,rpm
       - name: Upload Debian package
         uses: actions/upload-artifact@v4
         with:
           name: nexus-linux-deb
           path: src-tauri/target/release/bundle/deb/*.deb
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload RPM package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-linux-rpm
+          path: src-tauri/target/release/bundle/rpm/*.rpm
           if-no-files-found: error
           retention-days: 14
 
