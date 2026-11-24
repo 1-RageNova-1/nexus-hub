@@ -644,3 +644,36 @@ button {
 @keyframes pulse{50%{opacity:.9}}
 @media(max-width:850px){.sidebar{width:210px;min-width:210px}.secondary-view{padding:24px 18px}.page-heading{align-items:flex-start;flex-direction:column}.search-input{width:100%}}
 @media(max-width:650px){.sidebar{width:62px;min-width:62px;padding:15px 8px}.brand,.version-tag,.new-chat,.section-label,.nav-item span,.provider:not(.active),.provider-status,.user-info,.folder-list,.tiny-button{display:none}.sidebar-header{justify-content:center;padding:0}.nav-item,.provider{justify-content:center;padding:0}.welcome-cards{grid-template-columns:1fr}.topbar{padding:0 12px}.model-select{max-width:135px;min-width:90px}.secondary-view{padding:20px 12px}.history-card{padding:11px}.history-actions{flex-direction:column}.composer-area{padding:0 12px 14px}}
+
+
+/* Settings panel */
+.settings-overlay{position:fixed;inset:0;z-index:11000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(4,4,9,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.settings-overlay.visible{display:flex}
+.settings-modal{display:flex;flex-direction:column;width:min(540px,100%);max-height:min(780px,calc(100vh - 48px));overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:#12121b;color:#eeeef5;box-shadow:0 24px 90px rgba(0,0,0,.55);animation:appear .2s ease}
+.settings-header{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;border-bottom:1px solid var(--line)}
+.settings-header h2{margin:0;font-size:19px;letter-spacing:-.5px}
+.settings-header p{margin:6px 0 0;color:var(--muted);font-size:11px}
+.settings-close{display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.05);color:#ddd;font-size:22px}
+.settings-close:hover{background:rgba(255,255,255,.12);color:white}
+.settings-content{display:flex;flex-direction:column;gap:10px;padding:22px 24px 24px;overflow:auto}
+.settings-content label{margin-top:5px;color:#bdbdca;font-size:11px;font-weight:600}
+.settings-content input,.settings-content select{width:100%;min-height:40px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;outline:none;background:#1b1b26;color:#eeeef5;font:inherit;font-size:12px;color-scheme:dark}
+.settings-content input:focus,.settings-content select:focus{border-color:#a78bfa;box-shadow:0 0 0 3px rgba(167,139,250,.1)}
+.settings-content select option{background:#1b1b26;color:#eeeef5}
+.key-status{min-height:18px;color:var(--muted);font-size:10px}
+.settings-actions{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:9px;margin-top:4px}
+.settings-actions button{min-height:36px}
+.security-note{margin:7px 0 0;color:#777785;font-size:10px;line-height:1.6}
+.sidebar-footer .nav-item{width:100%;flex-shrink:0}
+.user-profile{position:relative;width:100%;min-width:0;display:flex;align-items:center;gap:10px;padding:12px 8px 0;border-top:1px solid var(--border);background:transparent;text-align:left}
+.user-profile:hover .user-avatar{box-shadow:0 0 0 3px rgba(167,139,250,.18)}
+.profile-settings-icon{margin-left:auto;color:#858593;font-size:13px;opacity:.7}
+.user-profile:hover .profile-settings-icon{color:#c4adff;opacity:1}
+#open-settings{display:flex!important;visibility:visible!important;opacity:1!important}
+#open-settings span{display:inline!important}
+#top-settings{display:grid;place-items:center;flex-shrink:0}
+:root[data-theme="light"] .settings-modal{background:#fff;color:#20202a}
+:root[data-theme="light"] .settings-content label{color:#444454}
+:root[data-theme="light"] .settings-content input,:root[data-theme="light"] .settings-content select{background:#f5f5fa;color:#20202a;color-scheme:light}
+:root[data-theme="light"] .settings-content select option{background:#fff;color:#20202a}
+@media(max-width:650px){.settings-overlay{padding:12px}.settings-modal{max-height:calc(100vh - 24px)}.settings-header,.settings-content{padding-left:17px;padding-right:17px}#open-settings{justify-content:center!important}#open-settings span{display:none!important}.user-profile{justify-content:center;padding:12px 0 0}.profile-settings-icon{display:none}}
