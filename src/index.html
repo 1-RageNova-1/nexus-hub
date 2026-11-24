@@ -27,7 +27,7 @@
   <div class="sidebar-section providers">
     <span class="section-label">ASSISTANTS IA</span>
     <button class="provider active" data-provider="groq"><span class="provider-icon">G</span>Groq<span class="provider-status" id="status-groq"></span></button>
-    <button class="provider" data-provider="gemini"><span class="provider-icon gemini">✦</span>Gemini<span class="provider-status" id="status-gemini"></span></button>
+    <button class="provider" data-provider="openrouter"><span class="provider-icon">O</span>OpenRouter<span class="provider-status" id="status-openrouter"></span></button>
   </div>
   <div class="sidebar-footer">
     <button class="nav-item" id="open-settings">⚙ <span>Paramètres</span></button>
@@ -38,7 +38,7 @@
 <header class="topbar"><div class="breadcrumb"><span>Nexus</span><span class="separator">/</span><span id="current-view-title">Conversations</span></div><div class="topbar-actions"><select id="model-select" class="model-select" title="Modèle"></select><button class="icon-button" id="top-new-chat" title="Nouvelle conversation">＋</button><button class="icon-button" id="top-settings" title="Paramètres">⚙</button></div></header>
 <div class="view" id="chat-view">
   <section class="chat-area" id="chat-area">
-    <div class="welcome" id="welcome"><img class="welcome-logo" src="nexus-icon.png" alt=""><h1>Bienvenue sur <span>Nexus</span></h1><p>Un seul espace. Plusieurs intelligences artificielles.</p><div class="welcome-cards"><button class="welcome-card" data-provider="groq"><span class="card-icon">G</span><strong>Groq</strong><span>Fast inference</span></button><button class="welcome-card" data-provider="gemini"><span class="card-icon">✦</span><strong>Gemini</strong><span>Google AI</span></button></div><div class="welcome-hint" id="welcome-hint">Configure une clé API dans les paramètres pour commencer.</div></div>
+    <div class="welcome" id="welcome"><img class="welcome-logo" src="nexus-icon.png" alt=""><h1>Bienvenue sur <span>Nexus</span></h1><p>Un seul espace. Plusieurs intelligences artificielles.</p><div class="welcome-cards"><button class="welcome-card" data-provider="groq"><span class="card-icon">G</span><strong>Groq</strong><span>Fast inference</span></button><button class="welcome-card" data-provider="openrouter"><span class="card-icon">O</span><strong>OpenRouter</strong><span>Free models router</span></button></div><div class="welcome-hint" id="welcome-hint">Configure une clé API dans les paramètres pour commencer.</div></div>
     <div class="messages" id="messages"></div>
   </section>
   <footer class="composer-area"><div class="composer-tools"><select id="context-mode" title="Contexte"><option value="smart">Contexte intelligent</option><option value="quick">Rapide</option><option value="full">Complet</option><option value="project">Projet</option><option value="custom">Personnalisé</option></select><span id="active-folder-label"></span></div><div class="composer"><button class="composer-add" id="attach-file" title="Ajouter un fichier à la bibliothèque">＋</button><textarea id="message-input" placeholder="Écrire un message..." rows="1"></textarea><button class="send-button" id="send-message" title="Envoyer">↑</button></div><p class="disclaimer">Les réponses sont générées par les API des fournisseurs sélectionnés.</p></footer>
@@ -48,7 +48,7 @@
 </main>
 </div>
 <div class="settings-overlay" id="settings-overlay"><section class="settings-modal"><header class="settings-header"><div><h2>Paramètres</h2><p>Configure Nexus et tes fournisseurs IA.</p></div><button class="settings-close" id="close-settings">×</button></header><div class="settings-content">
-<label for="api-provider">Fournisseur</label><select id="api-provider"><option value="groq">Groq</option><option value="gemini">Google Gemini</option></select>
+<label for="api-provider">Fournisseur</label><select id="api-provider"><option value="groq">Groq</option><option value="openrouter">OpenRouter</option></select>
 <label for="api-key-input">Clé API</label><input type="password" id="api-key-input" placeholder="Colle ta clé API ici" autocomplete="off" spellcheck="false">
 <div class="key-status" id="key-status">Vérification de la connexion...</div><div class="settings-actions"><button id="delete-api-key" class="danger-button">Supprimer la clé</button><button id="save-api-key" class="primary-button">Enregistrer la clé</button></div>
 <div class="settings-divider"></div><label for="default-context">Mode de contexte par défaut</label><select id="default-context"><option value="smart">Intelligent</option><option value="quick">Rapide</option><option value="full">Complet</option><option value="project">Projet</option><option value="custom">Personnalisé</option></select>
