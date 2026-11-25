@@ -108,7 +108,20 @@ jobs:
       - name: Generate application icons
         run: cargo tauri icon src-tauri/icons/icon.png
       - name: Build Android APK
-        run: cargo tauri android build --apk --target aarch64
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if cargo tauri android build --apk --target aarch64; then
+              exit 0
+            fi
+            if [[ "$attempt" -lt 3 ]]; then
+              echo "Android build failed (attempt $attempt/3); retrying in 30 seconds..."
+              sleep 30
+            fi
+          done
+          echo "::error::Android build failed after 3 attempts."
+          exit 1
       - name: Sign Android APK with permanent release key
         shell: bash
         env:
@@ -134,7 +147,7 @@ jobs:
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           chmod 600 "$KEYSTORE"
 
-          APK="$(find src-tauri/gen/android/app/build/outputs/apk -type f -name '*.apk' ! -name '*signed*' -print -quit)"
+          APK="$(find src-tauri/gen/android/app/build/outputs/apk -type f -name 'app-universal-release-unsigned.apk' -print -quit)"
           if [[ -z "$APK" ]]; then
             echo "::error::Android APK not found."
             find src-tauri/gen/android/app/build/outputs/apk -type f -print || true
