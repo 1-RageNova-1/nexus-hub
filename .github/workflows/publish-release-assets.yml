@@ -1,0 +1,43 @@
+name: Publish build artifacts to release
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "GitHub Actions build run ID"
+        required: true
+        default: "45592636212"
+      tag:
+        description: "Existing release tag"
+        required: true
+        default: "Release"
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  publish:
+    name: Attach installers to GitHub release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: |
+          mkdir -p downloaded/windows downloaded/android downloaded/linux dist
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name nexus-windows-x64 --dir downloaded/windows
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name nexus-android-arm64-apk --dir downloaded/android
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name nexus-linux-deb --dir downloaded/linux
+          find downloaded -type f -exec cp {} dist/ \;
+          echo "Files to publish:"
+          ls -lh dist
+          test -n "$(find dist -type f -print -quit)"
+
+      - name: Upload installers to existing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          gh release upload "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --clobber
