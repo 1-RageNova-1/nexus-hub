@@ -99,12 +99,33 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android
+      - name: Cache Gradle dependencies
+        uses: gradle/actions/setup-gradle@v4
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version '^2' --locked
       - name: Install frontend dependencies
         run: npm ci
       - name: Initialize Android project
         run: cargo tauri android init --ci
+      - name: Prefer Google-hosted Maven Central mirror
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path("src-tauri/gen/android")
+          mirror = 'maven { url = uri("https://maven-central.storage-download.googleapis.com/maven2/") }'
+          changed = 0
+          for path in root.rglob("*"):
+              if path.is_file() and path.suffix in {".gradle", ".kts"}:
+                  original = path.read_text()
+                  updated = original.replace("mavenCentral()", mirror + "\\n            mavenCentral()")
+                  if updated != original:
+                      path.write_text(updated)
+                      changed += 1
+          print(f"Added Google-hosted Maven Central mirror to {changed} Gradle file(s); Maven Central remains as fallback.")
+          PY
       - name: Generate application icons
         run: cargo tauri icon src-tauri/icons/icon.png
       - name: Build Android APK
@@ -116,8 +137,9 @@ jobs:
               exit 0
             fi
             if [[ "$attempt" -lt 3 ]]; then
-              echo "Android build failed (attempt $attempt/3); retrying in 30 seconds..."
-              sleep 30
+              delay=$((60 * attempt))
+              echo "Android build failed (attempt $attempt/3); retrying in $delay seconds..."
+              sleep "$delay"
             fi
           done
           echo "::error::Android build failed after 3 attempts."
