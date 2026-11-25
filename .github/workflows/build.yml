@@ -110,10 +110,29 @@ jobs:
         run: cargo tauri android init --ci
       - name: Build Android APK
         run: cargo tauri android build --apk --target aarch64
+      - name: Sign Android APK
+        shell: bash
+        run: |
+          APK="src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk"
+          SIGNED_APK="src-tauri/gen/android/app/build/outputs/apk/universal/release/Nexus-0.1.1-android-arm64.apk"
+          keytool -genkeypair -v \
+            -keystore "$RUNNER_TEMP/nexus-debug.keystore" \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign \
+            --ks "$RUNNER_TEMP/nexus-debug.keystore" \
+            --ks-key-alias androiddebugkey \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --out "$SIGNED_APK" "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$SIGNED_APK"
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: nexus-android-arm64-apk
-          path: src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          path: src-tauri/gen/android/app/build/outputs/apk/universal/release/Nexus-0.1.1-android-arm64.apk
           if-no-files-found: error
           retention-days: 14
