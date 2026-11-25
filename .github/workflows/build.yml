@@ -109,42 +109,45 @@ jobs:
         run: cargo tauri icon src-tauri/icons/icon.png
       - name: Build Android APK
         run: cargo tauri android build --apk --target aarch64
-      - name: Sign Android APK
+      - name: Generate Android signing key and sign APK
         shell: bash
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           set -euo pipefail
 
-          if [[ -z "$ANDROID_KEYSTORE_BASE64" || -z "$ANDROID_KEY_ALIAS" || -z "$ANDROID_KEYSTORE_PASSWORD" || -z "$ANDROID_KEY_PASSWORD" ]]; then
-            echo "::error::Android signing secrets are missing. Configure ANDROID_KEYSTORE_BASE64, ANDROID_KEY_ALIAS, ANDROID_KEYSTORE_PASSWORD and ANDROID_KEY_PASSWORD in GitHub Actions secrets."
-            exit 1
-          fi
+          KEYSTORE="$RUNNER_TEMP/nexus-debug.keystore"
+          STORE_PASSWORD="nexus-debug-password"
+          KEY_ALIAS="nexus"
+          KEY_PASSWORD="nexus-debug-password"
 
-          KEYSTORE="$RUNNER_TEMP/nexus-release.keystore"
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
+          keytool -genkeypair -v \
+            -keystore "$KEYSTORE" \
+            -storepass "$STORE_PASSWORD" \
+            -keypass "$KEY_PASSWORD" \
+            -alias "$KEY_ALIAS" \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Nexus Hub,O=Nexus,C=FR"
 
-          APK="$(find src-tauri/gen/android/app/build/outputs/apk -type f -name '*unsigned.apk' -print -quit)"
+          APK="$(find src-tauri/gen/android/app/build/outputs/apk -type f -name '*.apk' ! -name '*signed*' -print -quit)"
           if [[ -z "$APK" ]]; then
-            echo "::error::Unsigned Android APK not found."
+            echo "::error::Android APK not found."
             find src-tauri/gen/android/app/build/outputs/apk -type f -print || true
             exit 1
           fi
 
+          BUILD_TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          ALIGNED_APK="$RUNNER_TEMP/nexus-aligned.apk"
           SIGNED_APK="src-tauri/gen/android/app/build/outputs/apk/universal/release/Nexus-0.1.1-android-arm64.apk"
           mkdir -p "$(dirname "$SIGNED_APK")"
 
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign \
+          "$BUILD_TOOLS/zipalign" -f -p 4 "$APK" "$ALIGNED_APK"
+          "$BUILD_TOOLS/apksigner" sign \
             --ks "$KEYSTORE" \
-            --ks-key-alias "$ANDROID_KEY_ALIAS" \
-            --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
-            --key-pass env:ANDROID_KEY_PASSWORD \
-            --out "$SIGNED_APK" "$APK"
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass "pass:$STORE_PASSWORD" \
+            --key-pass "pass:$KEY_PASSWORD" \
+            --out "$SIGNED_APK" "$ALIGNED_APK"
 
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$SIGNED_APK"
+          "$BUILD_TOOLS/apksigner" verify --verbose "$SIGNED_APK"
           echo "Signed APK: $SIGNED_APK"
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
