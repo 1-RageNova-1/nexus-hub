@@ -120,7 +120,7 @@ jobs:
           for path in root.rglob("*"):
               if path.is_file() and path.suffix in {".gradle", ".kts"}:
                   original = path.read_text()
-                  updated = original.replace("mavenCentral()", mirror + "\\n            mavenCentral()")
+                  updated = original.replace("mavenCentral()", mirror + "\n            mavenCentral()")
                   if updated != original:
                       path.write_text(updated)
                       changed += 1
